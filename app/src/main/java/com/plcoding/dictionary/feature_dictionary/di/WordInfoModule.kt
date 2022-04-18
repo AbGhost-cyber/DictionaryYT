@@ -3,6 +3,7 @@ package com.plcoding.dictionary.feature_dictionary.di
 import android.app.Application
 import androidx.room.Room
 import com.google.gson.Gson
+import com.plcoding.dictionary.feature_dictionary.data.local.Converters
 import com.plcoding.dictionary.feature_dictionary.data.local.WordInfoDatabase
 import com.plcoding.dictionary.feature_dictionary.data.remote.DictionaryApi
 import com.plcoding.dictionary.feature_dictionary.data.repository.WordInfoRepositoryImpl
@@ -33,15 +34,15 @@ object WordInfoModule {
 
     @Provides
     @Singleton
-    fun provideDictionaryApi() = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
+    fun provideDictionaryApi(): DictionaryApi = Retrofit.Builder()
         .baseUrl(DictionaryApi.BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
         .build().create(DictionaryApi::class.java)
 
     @Provides
     @Singleton
     fun provideWordInfoDatabase(app: Application) = Room.databaseBuilder(
         app, WordInfoDatabase::class.java, "word_db"
-    ).addTypeConverter(GsonParser(Gson()))
+    ).addTypeConverter(Converters(GsonParser(Gson())))
         .fallbackToDestructiveMigration().build()
 }

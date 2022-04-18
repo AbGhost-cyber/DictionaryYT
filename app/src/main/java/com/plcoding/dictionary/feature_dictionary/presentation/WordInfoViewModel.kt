@@ -1,5 +1,6 @@
 package com.plcoding.dictionary.feature_dictionary.presentation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,7 @@ class WordInfoViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     sealed class UIEvent {
-        data class showSnackBar(val message: String) : UIEvent()
+        data class ShowSnackBar(val message: String) : UIEvent()
     }
 
     private var searchJob: Job? = null
@@ -44,17 +45,19 @@ class WordInfoViewModel @Inject constructor(
             getWordInfo(query).onEach { result ->
                 when (result) {
                     is Resource.Success -> {
+                        Log.d("TAG", "onSearch: success ${result.data}")
                         _state.value = _state.value.copy(
                             wordInfoItems = result.data ?: emptyList(),
                             isLoading = false
                         )
                     }
                     is Resource.Error -> {
+                        Log.d("TAG", "onSearch: error ${result.data}")
                         _state.value = _state.value.copy(
                             wordInfoItems = result.data ?: emptyList(),
                             isLoading = false
                         )
-                        _eventFlow.emit(UIEvent.showSnackBar(result.message ?: "an unknown error"))
+                        _eventFlow.emit(UIEvent.ShowSnackBar(result.message ?: "an unknown error"))
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(

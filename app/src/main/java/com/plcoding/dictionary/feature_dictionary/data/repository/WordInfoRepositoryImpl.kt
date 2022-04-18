@@ -23,9 +23,9 @@ class WordInfoRepositoryImpl(
         try {
             val apiWords = api.getWordInfo(word)
             dao.deleteWordInfos(apiWords.map { it.word })
-            dao.insertWordInfos(apiWords.map { it.toWordEntity() })
+            dao.insertWordInfos(apiWords.map { it.toWordInfoEntity() })
         } catch (e: HttpException) {
-            emit(Resource.Error("something went wrong", cachedWords))
+            emit(Resource.Error("something wrong", cachedWords))
         } catch (e: IOException) {
             emit(Resource.Error("no internet connection", cachedWords))
         }
